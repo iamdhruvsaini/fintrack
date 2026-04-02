@@ -7,6 +7,8 @@ const { sendResponse } = require("./utils");
 const app = express();
 const PORT = serverConfig.PORT;
 const morgan = require('morgan');
+const db = require("./models");
+
 
 
 // Middlewares
@@ -33,6 +35,20 @@ app.use((err, req, res, next) => {
 });
 
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await db.sequelize.authenticate(); // or mongoose.connect()
+
+    console.log("Database connected...");
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+
+  } catch (error) {
+    console.error("Failed to connect to DB:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
