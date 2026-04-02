@@ -1,0 +1,16 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "This is backend for the financial tracking portal",
+  "repository": {
+    "type": "git",
+    "url": "fintrack"
+  },
+  "license": "MIT ",
+  "author": "Dhruv Saini",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
