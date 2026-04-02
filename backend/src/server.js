@@ -1,30 +1,38 @@
-require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const { ResponseFormat } = require("./utils");
-
+const { serverConfig } = require("./config");
+const { sendResponse } = require("./utils");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = serverConfig.PORT;
+const morgan = require('morgan');
+
 
 // Middlewares
+app.use(morgan("dev"));
 app.use(cors());
 app.use(express.json());
- 
+
+app.get("/", (req, res) => {
+  sendResponse(res, {
+    message: "Welcome to FinTrack API"
+  });
+});
+
 
 
 
 
 app.use((err, req, res, next) => {
-
-  res.status(err.status || 500).json({
+  sendResponse(res, {
     success: false,
     message: err.message || "Internal Server Error",
+    statusCode: err.status || 500
   });
 });
 
-ResponseFormat
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

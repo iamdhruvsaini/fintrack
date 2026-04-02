@@ -1,3 +1,3 @@
 module.exports={
-    ResponseFormat: require('./responseFormat')
+    sendResponse: require('./sendResponse')
 }

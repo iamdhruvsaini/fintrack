@@ -15,5 +15,5 @@ const dbConfig = require("./db-config");
 
 module.exports = {
   serverConfig,
-  dbConfig,
+  dbConfig
 };
