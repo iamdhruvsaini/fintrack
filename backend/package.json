@@ -21,6 +21,7 @@
     "sequelize-cli": "^6.6.5"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "connect-redis": "^9.0.0",
     "cors": "^2.8.6",
     "cross-env": "^10.1.0",
