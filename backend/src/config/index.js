@@ -13,10 +13,13 @@ dotenv.config({
 const serverConfig = require("./server-config");
 const dbConfig = require("./db-config");
 const { getRedisClient, connectRedis } = require("./redis-config");
+const { sessionConfig, createSessionMiddleware } = require("./session-config");
 
 module.exports = {
   serverConfig,
   dbConfig,
   getRedisClient,
   connectRedis,
+  sessionConfig,
+  createSessionMiddleware,
 };
