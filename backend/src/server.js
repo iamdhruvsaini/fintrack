@@ -1,7 +1,7 @@
 
 const express = require("express");
 const cors = require("cors");
-const { serverConfig } = require("./config");
+const { serverConfig, connectRedis } = require("./config");
 const { sendResponse } = require("./utils");
 
 const app = express();
@@ -38,8 +38,9 @@ app.use((err, req, res, next) => {
 const startServer = async () => {
   try {
     await db.sequelize.authenticate(); // or mongoose.connect()
-
     console.log("Database connected...");
+
+    await connectRedis();
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
