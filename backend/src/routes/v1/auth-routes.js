@@ -1,10 +1,7 @@
-const router = require('express').Router();
+const router = require("express").Router();
+const asyncHandler = require("../../middlewares/async-handler.middleware");
+const authController = require("../../controllers/auth.controller");
 
-
-router.post('/login', (req, res) => {
-    console.log("Login request body:", req.body);
-    const { email, password } = req.body;
-});
-
+router.post("/login", asyncHandler(authController.login));
 
 module.exports = router;

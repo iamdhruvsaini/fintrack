@@ -1,6 +1,7 @@
 
 const express = require("express");
 const cors = require("cors");
+const { StatusCodes } = require("http-status-codes");
 const { serverConfig, connectRedis } = require("./config");
 const { sendResponse } = require("./utils");
 const v1ApiRoutes = require('./routes/index');
@@ -39,12 +40,25 @@ const startServer = async () => {
     // Routes
     app.use("/api", v1ApiRoutes);
 
-    // error handling middleware
+    // Final handlers (must stay last)
+    app.use((req, res) => {
+      return sendResponse(res, {
+        success: false,
+        message: `Route not found: ${req.method} ${req.originalUrl}`,
+        statusCode: StatusCodes.NOT_FOUND,
+        errorCode: "ROUTE_NOT_FOUND",
+      });
+    });
+
     app.use((err, req, res, next) => {
-      sendResponse(res, {
+      const statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
+      const code = err.code || "INTERNAL_SERVER_ERROR";
+
+      return sendResponse(res, {
         success: false,
         message: err.message || "Internal Server Error",
-        statusCode: err.status || 500
+        statusCode,
+        errorCode: code
       });
     });
 

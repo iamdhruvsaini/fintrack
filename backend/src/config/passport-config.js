@@ -10,27 +10,25 @@ passport.use(
       usernameField: "email",
       passwordField: "password",
     },
-    async (email, password, done) => {
-      try {
-        const user = await User.findOne({
-          where: { email },
-          include: [{ model: Role, as: "role" }],
-        });
+    (email, password, done) => {
+      User.findOne({
+        where: { email },
+        include: [{ model: Role, as: "role" }],
+      })
+        .then((user) => {
+          if (!user) {
+            return done(null, false, { message: "User not found" });
+          }
 
-        if (!user) {
-          return done(null, false, { message: "User not found" });
-        }
+          return bcrypt.compare(password, user.password_hash).then((isMatch) => {
+            if (!isMatch) {
+              return done(null, false, { message: "Invalid credentials" });
+            }
 
-        const isMatch = await bcrypt.compare(password, user.password_hash);
-
-        if (!isMatch) {
-          return done(null, false, { message: "Invalid credentials" });
-        }
-
-        return done(null, user);
-      } catch (err) {
-        return done(err);
-      }
+            return done(null, user);
+          });
+        })
+        .catch((err) => done(err));
     }
   )
 );
@@ -40,13 +38,12 @@ passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findByPk(id);
-    done(null, user);
-  } catch (err) {
-    done(err);
-  }
+passport.deserializeUser((id, done) => {
+  User.findByPk(id, {
+    include: [{ model: Role, as: "role" }],
+  })
+    .then((user) => done(null, user))
+    .catch((err) => done(err));
 });
 
 module.exports = passport;
