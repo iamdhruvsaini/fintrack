@@ -10,14 +10,32 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Category.hasMany(models.FinancialRecord, {
+        foreignKey: 'category_id',
+        as: 'records',
+      });
     }
   }
   Category.init({
-    name: DataTypes.STRING,
-    type: DataTypes.STRING,
-    status: DataTypes.STRING,
-    is_deleted: DataTypes.BOOLEAN
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    type: {
+      type: DataTypes.ENUM('income', 'expense'),
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.ENUM('active', 'inactive'),
+      allowNull: false,
+      defaultValue: 'active',
+    },
+    is_deleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    }
   }, {
     sequelize,
     modelName: 'Category',

@@ -7,31 +7,42 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       name: {
-        type: Sequelize.STRING
+        allowNull: false,
+        unique: true,
+        type: Sequelize.STRING,
       },
       type: {
-        type: Sequelize.STRING
+        allowNull: false,
+        type: Sequelize.ENUM('income', 'expense'),
       },
       status: {
-        type: Sequelize.STRING
+        allowNull: false,
+        defaultValue: 'active',
+        type: Sequelize.ENUM('active', 'inactive'),
       },
       is_deleted: {
-        type: Sequelize.BOOLEAN
+        allowNull: false,
+        defaultValue: false,
+        type: Sequelize.BOOLEAN,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       }
     });
+
+    await queryInterface.addIndex('Categories', ['type']);
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Categories');
+    await queryInterface.sequelize.query("DROP TYPE IF EXISTS \"enum_Categories_type\";");
+    await queryInterface.sequelize.query("DROP TYPE IF EXISTS \"enum_Categories_status\";");
   }
 };

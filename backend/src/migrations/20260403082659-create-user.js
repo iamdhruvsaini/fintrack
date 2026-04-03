@@ -7,37 +7,56 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       name: {
-        type: Sequelize.STRING
+        allowNull: false,
+        type: Sequelize.STRING,
       },
       email: {
-        type: Sequelize.STRING
+        allowNull: false,
+        unique: true,
+        type: Sequelize.STRING,
       },
       password_hash: {
-        type: Sequelize.TEXT
+        allowNull: false,
+        type: Sequelize.TEXT,
       },
       role_id: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        references: {
+          model: 'Roles',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'RESTRICT',
+        type: Sequelize.INTEGER,
       },
       status: {
-        type: Sequelize.STRING
+        allowNull: false,
+        defaultValue: 'active',
+        type: Sequelize.ENUM('active', 'inactive'),
       },
       is_deleted: {
-        type: Sequelize.BOOLEAN
+        allowNull: false,
+        defaultValue: false,
+        type: Sequelize.BOOLEAN,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       }
     });
+
+    await queryInterface.addIndex('Users', ['email']);
+    await queryInterface.addIndex('Users', ['role_id']);
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Users');
+    await queryInterface.sequelize.query("DROP TYPE IF EXISTS \"enum_Users_status\";");
   }
 };

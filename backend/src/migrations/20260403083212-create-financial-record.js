@@ -7,43 +7,71 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       user_id: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'RESTRICT',
+        type: Sequelize.INTEGER,
       },
       category_id: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        references: {
+          model: 'Categories',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'RESTRICT',
+        type: Sequelize.INTEGER,
       },
       amount: {
-        type: Sequelize.FLOAT
+        allowNull: false,
+        type: Sequelize.DECIMAL(14, 2),
       },
       type: {
-        type: Sequelize.STRING
+        allowNull: false,
+        type: Sequelize.ENUM('income', 'expense'),
       },
       date: {
-        type: Sequelize.DATE
+        allowNull: false,
+        type: Sequelize.DATE,
       },
       notes: {
-        type: Sequelize.TEXT
+        allowNull: true,
+        type: Sequelize.TEXT,
       },
       status: {
-        type: Sequelize.STRING
+        allowNull: false,
+        defaultValue: 'active',
+        type: Sequelize.ENUM('active', 'inactive'),
       },
       is_deleted: {
-        type: Sequelize.BOOLEAN
+        allowNull: false,
+        defaultValue: false,
+        type: Sequelize.BOOLEAN,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       }
     });
+
+    await queryInterface.addIndex('FinancialRecords', ['user_id']);
+    await queryInterface.addIndex('FinancialRecords', ['category_id']);
+    await queryInterface.addIndex('FinancialRecords', ['date']);
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('FinancialRecords');
+    await queryInterface.sequelize.query("DROP TYPE IF EXISTS \"enum_FinancialRecords_type\";");
+    await queryInterface.sequelize.query("DROP TYPE IF EXISTS \"enum_FinancialRecords_status\";");
   }
 };
