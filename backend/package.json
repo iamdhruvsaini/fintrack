@@ -14,7 +14,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cross-env NODE_ENV=development node src/server.js",
     "dev": "cross-env NODE_ENV=development nodemon src/server.js",
-    "prod": "cross-env NODE_ENV=production node src/server.js"
+    "prod": "cross-env NODE_ENV=production node src/server.js",
+    "db:migrate:prod": "cross-env NODE_ENV=production sequelize-cli db:migrate",
+    "db:migrate:undo:prod": "cross-env NODE_ENV=production sequelize-cli db:migrate:undo",
+    "db:migrate:status:prod": "cross-env NODE_ENV=production sequelize-cli db:migrate:status",
+    "db:seed:prod": "cross-env NODE_ENV=production sequelize-cli db:seed:all",
+    "db:seed:undo:prod": "cross-env NODE_ENV=production sequelize-cli db:seed:undo:all"
   },
   "devDependencies": {
     "nodemon": "^3.1.14",
