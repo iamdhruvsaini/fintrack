@@ -1,5 +1,8 @@
 const { Op } = require("sequelize");
 const { User, Role } = require("../models");
+const CrudRepository = require("./crud.repository");
+
+const userCrudRepository = new CrudRepository(User);
 
 const findUsersWithFilters = async ({
   page,
@@ -56,6 +59,35 @@ const findUsersWithFilters = async ({
   });
 };
 
+const findUserById = (id) => {
+  return userCrudRepository.getById(id, {
+    include: [
+      {
+        model: Role,
+        as: "role",
+        attributes: ["id", "name", "status"],
+      },
+    ],
+  });
+};
+
+const findActiveRoleByName = (name) => {
+  return Role.findOne({
+    where: {
+      name,
+      status: "active",
+      is_deleted: false,
+    },
+  });
+};
+
+const updateUserById = (id, payload) => {
+  return userCrudRepository.updateById(id, payload);
+};
+
 module.exports = {
   findUsersWithFilters,
+  findUserById,
+  findActiveRoleByName,
+  updateUserById,
 };

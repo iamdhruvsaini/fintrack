@@ -1,4 +1,6 @@
 const userRepository = require("../repository/user.repository");
+const { StatusCodes } = require("http-status-codes");
+const { sendError } = require("../utils");
 const { userToPublic } = require("../utils");
 
 const getUsers = async ({
@@ -34,6 +36,43 @@ const getUsers = async ({
   };
 };
 
+const updateUserRole = async ({ userId, roleName }) => {
+  const normalizedRoleName = String(roleName).trim().toLowerCase();
+
+  const user = await userRepository.findUserById(userId);
+
+  if (!user) {
+    throw sendError("User not found", StatusCodes.NOT_FOUND, "USER_NOT_FOUND");
+  }
+
+  const role = await userRepository.findActiveRoleByName(normalizedRoleName);
+
+  if (!role) {
+    throw sendError("Invalid or inactive role", StatusCodes.BAD_REQUEST, "INVALID_ROLE");
+  }
+
+  if (Number(user.role_id) === Number(role.id)) {
+    return {
+      user,
+      publicUser: userToPublic(user),
+      changed: false,
+    };
+  }
+
+  await userRepository.updateUserById(userId, {
+    role_id: role.id,
+  });
+
+  const updatedUser = await userRepository.findUserById(userId);
+
+  return {
+    user: updatedUser,
+    publicUser: userToPublic(updatedUser),
+    changed: true,
+  };
+};
+
 module.exports = {
   getUsers,
+  updateUserRole,
 };

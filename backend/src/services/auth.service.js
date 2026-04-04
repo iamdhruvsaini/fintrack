@@ -6,12 +6,6 @@ const { sendError, userToPublic } = require("../utils");
 const DEFAULT_REGISTER_ROLE = "viewer";
 
 const login = async ({ email, password }) => {
-	if (!email || !password) {
-		throw sendError("Email and password are required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR", {
-			fields: ["email", "password"],
-		});
-	}
-
 	const user = await authRepository.findUserByEmail(email);
 
 	if (!user) {
@@ -39,12 +33,6 @@ const login = async ({ email, password }) => {
 };
 
 const register = async ({ name, email, password, roleName = DEFAULT_REGISTER_ROLE }) => {
-	if (!name || !email || !password) {
-		throw sendError("Name, email and password are required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR", {
-			fields: ["name", "email", "password"],
-		});
-	}
-
 	const normalizedEmail = email.trim().toLowerCase();
 	const normalizedRoleName = (roleName || DEFAULT_REGISTER_ROLE).trim().toLowerCase();
 
@@ -81,10 +69,6 @@ const register = async ({ name, email, password, roleName = DEFAULT_REGISTER_ROL
 };
 
 const getProfile = async (user) => {
-	if (!user) {
-		throw sendError("Unauthorized", StatusCodes.UNAUTHORIZED, "UNAUTHORIZED");
-	}
-
 	if (user.status !== "active") {
 		throw sendError("User account is inactive", StatusCodes.FORBIDDEN, "USER_INACTIVE");
 	}
