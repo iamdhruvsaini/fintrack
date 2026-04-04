@@ -2,28 +2,25 @@ const { User, Role } = require("../models");
 const CrudRepository = require("./crud.repository");
 
 const userCrudRepository = new CrudRepository(User);
+const roleInclude = [
+	{
+		model: Role,
+		as: "role",
+	},
+];
 
 const findUserByEmail = (email) => {
-	return User.findOne({
-		where: { email },
-		include: [
-			{
-				model: Role,
-				as: "role",
-			},
-		],
-	});
+	return userCrudRepository.getOne(
+		{ email },
+		{
+			include: roleInclude,
+		}
+	);
 };
 
 const findUserById = (id) => {
-	return User.findOne({
-		where: { id },
-		include: [
-			{
-				model: Role,
-				as: "role",
-			},
-		],
+	return userCrudRepository.getById(id, {
+		include: roleInclude,
 	});
 };
 

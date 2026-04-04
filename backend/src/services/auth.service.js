@@ -80,7 +80,27 @@ const register = async ({ name, email, password, roleName = DEFAULT_REGISTER_ROL
 	};
 };
 
+const getProfile = async (user) => {
+	if (!user) {
+		throw sendError("Unauthorized", StatusCodes.UNAUTHORIZED, "UNAUTHORIZED");
+	}
+
+	if (user.status !== "active") {
+		throw sendError("User account is inactive", StatusCodes.FORBIDDEN, "USER_INACTIVE");
+	}
+
+	if (user.role && user.role.status !== "active") {
+		throw sendError("Assigned role is inactive", StatusCodes.FORBIDDEN, "ROLE_INACTIVE");
+	}
+
+	return {
+		user,
+		publicUser: userToPublic(user),
+	};
+};
+
 module.exports = {
 	login,
 	register,
+	getProfile,
 };

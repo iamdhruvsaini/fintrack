@@ -31,7 +31,7 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
 	const { name, email, password, roleName } = req.body || {};
-	
+
 
 	if (!name || !email || !password) {
 		throw sendError("Name, email and password are required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
@@ -53,7 +53,19 @@ const register = async (req, res) => {
 	});
 };
 
+const getProfile = async (req, res) => {
+	const { publicUser } = await authService.getProfile(req.user);
+	console.log("Fetched profile for user:", req.user);
+	sendResponse(res, {
+		message: "Profile fetched successfully",
+		data: {
+			user: publicUser,
+		},
+	});
+};
+
 module.exports = {
 	login,
 	register,
+	getProfile,
 };
