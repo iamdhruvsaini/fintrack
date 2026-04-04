@@ -12,13 +12,21 @@ const db = require("./models");
 const passport = require("./config/passport-config");
 const { createSessionMiddleware } = require("./config/session-config");
 
+const corsOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",").map((origin) => origin.trim())
+  : true;
 
 // Middlewares
 app.use(morgan("dev"));
-app.use(cors());
+app.use(cors({
+  origin: corsOrigins,
+  credentials: true,
+}));
 app.use(express.json());
 
-app.use(passport.initialize());
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
 
 app.get("/", (req, res) => {
   sendResponse(res, {
@@ -35,6 +43,7 @@ const startServer = async () => {
     const redisClient = await connectRedis();
 
     app.use(createSessionMiddleware(redisClient));
+    app.use(passport.initialize());
     app.use(passport.session());
 
     // Routes
