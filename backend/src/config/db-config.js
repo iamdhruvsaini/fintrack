@@ -12,12 +12,18 @@ const buildDbConfig = () => {
   const dialect = process.env.DB_DIALECT || "postgres";
 
   if (process.env.DATABASE_URL) {
-    return {
-      use_env_variable: "DATABASE_URL",
-      dialect,
-      logging: false,
-    };
-  }
+  return {
+    use_env_variable: "DATABASE_URL",
+    dialect,
+    logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
+  };
+}
 
   return {
     username: process.env.DB_USER,
