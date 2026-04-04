@@ -3,6 +3,8 @@ const { StatusCodes } = require("http-status-codes");
 const authRepository = require("../repository/auth.repository");
 const { sendError, userToPublic } = require("../utils");
 
+const DEFAULT_REGISTER_ROLE = "viewer";
+
 const login = async ({ email, password }) => {
 	if (!email || !password) {
 		throw sendError("Email and password are required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR", {
@@ -36,6 +38,49 @@ const login = async ({ email, password }) => {
 	};
 };
 
+const register = async ({ name, email, password, roleName = DEFAULT_REGISTER_ROLE }) => {
+	if (!name || !email || !password) {
+		throw sendError("Name, email and password are required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR", {
+			fields: ["name", "email", "password"],
+		});
+	}
+
+	const normalizedEmail = email.trim().toLowerCase();
+	const normalizedRoleName = (roleName || DEFAULT_REGISTER_ROLE).trim().toLowerCase();
+
+	const existingUser = await authRepository.findUserByEmail(normalizedEmail);
+
+	if (existingUser) {
+		throw sendError("Email already registered", StatusCodes.CONFLICT, "EMAIL_ALREADY_EXISTS");
+	}
+
+	const role = await authRepository.findActiveRoleByName(normalizedRoleName);
+
+	if (!role) {
+		throw sendError("Invalid or inactive role", StatusCodes.BAD_REQUEST, "INVALID_ROLE");
+	}
+
+	const password_hash = await bcrypt.hash(password, 10);
+
+	const createdUser = await authRepository.createUser({
+		name: name.trim(),
+		email: normalizedEmail,
+		password_hash,
+		role_id: role.id,
+		status: "active",
+		is_deleted: false,
+	});
+
+	const user = await authRepository.findUserById(createdUser.id);
+	
+
+	return {
+		user,
+		publicUser: userToPublic(user),
+	};
+};
+
 module.exports = {
 	login,
+	register,
 };

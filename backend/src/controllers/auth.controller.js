@@ -29,6 +29,31 @@ const login = async (req, res) => {
 	});
 };
 
+const register = async (req, res) => {
+	const { name, email, password, roleName } = req.body || {};
+	
+
+	if (!name || !email || !password) {
+		throw sendError("Name, email and password are required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
+	}
+
+	const { publicUser } = await authService.register({
+		name,
+		email,
+		password,
+		roleName,
+	});
+
+	sendResponse(res, {
+		message: "Registration successful",
+		statusCode: StatusCodes.CREATED,
+		data: {
+			user: publicUser,
+		},
+	});
+};
+
 module.exports = {
 	login,
+	register,
 };
