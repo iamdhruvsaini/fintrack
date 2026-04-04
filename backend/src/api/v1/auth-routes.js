@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const asyncHandler = require("../../middlewares/async-handler.middleware");
-const authController = require("../../controllers/auth.controller");
+const { asyncHandler } = require("../../middlewares");
+const { authController } = require("../../controllers");
 
 router.post("/login", asyncHandler(authController.login));
 
