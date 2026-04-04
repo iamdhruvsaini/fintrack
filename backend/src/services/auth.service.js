@@ -83,8 +83,33 @@ const getProfile = async (user) => {
 	};
 };
 
+const logout = async (req) => {
+	await new Promise((resolve, reject) => {
+		req.logout((error) => {
+			if (error) {
+				reject(sendError("Failed to logout user", StatusCodes.INTERNAL_SERVER_ERROR, "LOGOUT_FAILED"));
+				return;
+			}
+			resolve();
+		});
+	});
+
+	if (req.session) {
+		await new Promise((resolve, reject) => {
+			req.session.destroy((error) => {
+				if (error) {
+					reject(sendError("Failed to destroy session", StatusCodes.INTERNAL_SERVER_ERROR, "SESSION_DESTROY_FAILED"));
+					return;
+				}
+				resolve();
+			});
+		});
+	}
+};
+
 module.exports = {
 	login,
 	register,
 	getProfile,
+	logout,
 };
