@@ -55,7 +55,6 @@ const register = async (req, res) => {
 
 const getProfile = async (req, res) => {
 	const { publicUser } = await authService.getProfile(req.user);
-	console.log("Fetched profile for user:", req.user);
 	sendResponse(res, {
 		message: "Profile fetched successfully",
 		data: {
