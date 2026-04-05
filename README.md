@@ -5,15 +5,14 @@
 This project implements a backend for a finance dashboard system and is structured to demonstrate:
 
 - API design and versioned routing
+- Modular architecture in api, controllers, services and repository
 - Data modeling for users, roles, categories, and financial records
 - Business logic for CRUD and dashboard aggregations
-- Backend access control using authentication and role-based authorization
-- Validation and standardized error handling
-- Persistence with PostgreSQL and Sequelize ORM
+- Backend access control using authentication and role-based authorization via passport.js and redis making blazing fast
+- Validation and standardized error handling using middlewares
+- Persistence with PostgreSQL - Neon and Sequelize ORM
 
 The implementation focuses on correctness, clarity, and maintainability with a layered architecture.
-
-## Assignment Coverage
 
 ### 1) User and Role Management
 
@@ -74,7 +73,7 @@ Access level in the current implementation:
 
 ### 6) Data Persistence
 
-- PostgreSQL is used with Sequelize migrations, models, and seeders.
+- PostgreSQL - Neon is used with Sequelize migrations, models, and seeders.
 - Soft-delete style flags are present in entities (`is_deleted`) and are used in record/category logic.
 
 ### Optional Enhancements Included
