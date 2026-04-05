@@ -6,7 +6,7 @@ function App() {
 
   return (
     <h1>
-      Hello World
+      Hello World fintrack!
     </h1>
   )
 }
