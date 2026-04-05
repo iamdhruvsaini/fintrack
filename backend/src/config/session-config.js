@@ -2,7 +2,7 @@ const session = require("express-session");
 const { RedisStore } = require("connect-redis");
 
 const buildSessionConfig = (redisClient) => ({
-  secret: process.env.SESSION_SECRET || "your_secret_key",
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: new RedisStore({
