@@ -6,14 +6,14 @@ const { serverConfig, connectRedis } = require("./config");
 const { sendResponse } = require("./utils");
 const v1ApiRoutes = require('./api/index');
 const app = express();
-const PORT = serverConfig.PORT;
 const morgan = require('morgan');
 const db = require("./models");
 const passport = require("./config/passport-config");
 const { createSessionMiddleware } = require("./config/session-config");
 
-const corsOrigins = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(",").map((origin) => origin.trim())
+const PORT = serverConfig.PORT;
+const corsOrigins = serverConfig.CORS_ORIGIN
+  ? serverConfig.CORS_ORIGIN.split(",").map((origin) => origin.trim())
   : true;
 
 // Middlewares
@@ -24,7 +24,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
-if (process.env.NODE_ENV === "production") {
+if (serverConfig.NODE_ENV === "production") {
   app.set("trust proxy", 1);
 }
 

@@ -1,8 +1,9 @@
 const { createClient } = require("redis");
+const serverConfig = require("./server-config");
 
 const buildRedisUrl = () => {
-  if (process.env.UPSTASH_REDIS_URL) {
-    return process.env.UPSTASH_REDIS_URL;
+  if (serverConfig.UPSTASH_REDIS_URL) {
+    return serverConfig.UPSTASH_REDIS_URL;
   }
   return null;
 };

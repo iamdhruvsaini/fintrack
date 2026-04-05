@@ -1,8 +1,9 @@
 const session = require("express-session");
 const { RedisStore } = require("connect-redis");
+const serverConfig = require("./server-config");
 
 const buildSessionConfig = (redisClient) => ({
-  secret: process.env.SESSION_SECRET,
+  secret: serverConfig.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: new RedisStore({
@@ -11,9 +12,9 @@ const buildSessionConfig = (redisClient) => ({
   }),
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    maxAge: Number(process.env.SESSION_MAX_AGE) || 1000 * 60 * 60 * 24,
+    secure: serverConfig.NODE_ENV === "production",
+    sameSite: serverConfig.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: Number(serverConfig.SESSION_MAX_AGE) || 1000 * 60 * 60 * 24,
   },
 });
 
