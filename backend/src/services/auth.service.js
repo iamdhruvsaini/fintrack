@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const { StatusCodes } = require("http-status-codes");
-const authRepository = require("../repository/auth.repository");
+const { authRepository } = require("../repository");
 const { sendError, userToPublic } = require("../utils");
 
 const DEFAULT_REGISTER_ROLE = "viewer";

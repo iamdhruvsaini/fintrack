@@ -1,43 +1,12 @@
 const { StatusCodes } = require("http-status-codes");
-const categoryRepository = require("../repository/category.repository");
+const { categoryRepository } = require("../repository");
 const { sendError } = require("../utils");
-
-const ALLOWED_TYPES = new Set(["income", "expense"]);
-const ALLOWED_STATUS = new Set(["active", "inactive"]);
-
-const normalizeName = (name) => {
-  return String(name).trim().replace(/\s+/g, " ");
-};
-
-const parseId = (id) => {
-  const parsed = Number(id);
-
-  if (!Number.isInteger(parsed) || parsed <= 0) {
-    throw sendError("Invalid category id", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
-  }
-
-  return parsed;
-};
-
-const ensureValidType = (type) => {
-  const normalizedType = String(type).trim().toLowerCase();
-
-  if (!ALLOWED_TYPES.has(normalizedType)) {
-    throw sendError("Invalid category type", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
-  }
-
-  return normalizedType;
-};
-
-const ensureValidStatus = (status) => {
-  const normalizedStatus = String(status).trim().toLowerCase();
-
-  if (!ALLOWED_STATUS.has(normalizedStatus)) {
-    throw sendError("Invalid category status", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
-  }
-
-  return normalizedStatus;
-};
+const {
+  normalizeCategoryName,
+  parseCategoryId,
+  ensureValidCategoryType,
+  ensureValidCategoryStatus,
+} = require("../validators");
 
 const getCategories = async ({
   page = 1,
@@ -52,8 +21,8 @@ const getCategories = async ({
   const parsedPage = Number(page) > 0 ? Number(page) : 1;
   const parsedLimit = Number(limit) > 0 ? Math.min(Number(limit), 100) : 10;
 
-  const normalizedType = type ? ensureValidType(type) : undefined;
-  const normalizedStatus = status ? ensureValidStatus(status) : undefined;
+  const normalizedType = type ? ensureValidCategoryType(type) : undefined;
+  const normalizedStatus = status ? ensureValidCategoryStatus(status) : undefined;
   const parsedIncludeInactive = String(includeInactive).toLowerCase() === "true";
 
   const { rows, count } = await categoryRepository.findCategoriesWithFilters({
@@ -83,7 +52,7 @@ const getCategories = async ({
 };
 
 const getCategoryById = async (id) => {
-  const parsedId = parseId(id);
+  const parsedId = parseCategoryId(id);
   const category = await categoryRepository.findCategoryById(parsedId);
 
   if (!category) {
@@ -94,14 +63,14 @@ const getCategoryById = async (id) => {
 };
 
 const createCategory = async ({ name, type, status = "active" }) => {
-  const normalizedName = normalizeName(name);
+  const normalizedName = normalizeCategoryName(name);
 
   if (!normalizedName) {
     throw sendError("Category name is required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
   }
 
-  const normalizedType = ensureValidType(type);
-  const normalizedStatus = ensureValidStatus(status);
+  const normalizedType = ensureValidCategoryType(type);
+  const normalizedStatus = ensureValidCategoryStatus(status);
 
   const existingCategory = await categoryRepository.findCategoryByName(normalizedName, {
     includeDeleted: true,
@@ -120,7 +89,7 @@ const createCategory = async ({ name, type, status = "active" }) => {
 };
 
 const updateCategory = async (id, payload) => {
-  const parsedId = parseId(id);
+  const parsedId = parseCategoryId(id);
   const category = await categoryRepository.findCategoryById(parsedId);
 
   if (!category) {
@@ -130,7 +99,7 @@ const updateCategory = async (id, payload) => {
   const updates = {};
 
   if (payload.name !== undefined) {
-    const normalizedName = normalizeName(payload.name);
+    const normalizedName = normalizeCategoryName(payload.name);
 
     if (!normalizedName) {
       throw sendError("Category name cannot be empty", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
@@ -148,18 +117,18 @@ const updateCategory = async (id, payload) => {
   }
 
   if (payload.type !== undefined) {
-    updates.type = ensureValidType(payload.type);
+    updates.type = ensureValidCategoryType(payload.type);
   }
 
   if (payload.status !== undefined) {
-    updates.status = ensureValidStatus(payload.status);
+    updates.status = ensureValidCategoryStatus(payload.status);
   }
 
   return categoryRepository.updateCategoryById(parsedId, updates);
 };
 
 const deleteCategory = async (id) => {
-  const parsedId = parseId(id);
+  const parsedId = parseCategoryId(id);
   const category = await categoryRepository.findCategoryById(parsedId);
 
   if (!category) {

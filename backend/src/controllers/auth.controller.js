@@ -1,13 +1,12 @@
 const { StatusCodes } = require("http-status-codes");
 const { sendResponse, sendError } = require("../utils");
 const { authService } = require("../services");
+const { validateLoginBody, validateRegisterBody } = require("../validators");
 
 const login = async (req, res) => {
-	const { email, password } = req.body || {};
+	validateLoginBody(req.body);
 
-	if (!email || !password) {
-		throw sendError("Email and password are required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
-	}
+	const { email, password } = req.body || {};
 
 	const { user, publicUser } = await authService.login({ email, password });
 
@@ -30,12 +29,9 @@ const login = async (req, res) => {
 };
 
 const register = async (req, res) => {
+	validateRegisterBody(req.body);
+
 	const { name, email, password, roleName } = req.body || {};
-
-
-	if (!name || !email || !password) {
-		throw sendError("Name, email and password are required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
-	}
 
 	const { publicUser } = await authService.register({
 		name,

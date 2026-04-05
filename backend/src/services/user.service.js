@@ -1,4 +1,4 @@
-const userRepository = require("../repository/user.repository");
+const { userRepository } = require("../repository");
 const { StatusCodes } = require("http-status-codes");
 const { sendError } = require("../utils");
 const { userToPublic } = require("../utils");

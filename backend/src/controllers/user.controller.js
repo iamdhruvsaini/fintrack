@@ -1,6 +1,6 @@
-const { StatusCodes } = require("http-status-codes");
-const { sendResponse, sendError } = require("../utils");
+const { sendResponse } = require("../utils");
 const { userService } = require("../services");
+const { parseUserId, validateChangeUserRoleBody } = require("../validators");
 
 const getUsers = async (req, res) => {
   const { page, limit, name, role, search } = req.query || {};
@@ -20,19 +20,12 @@ const getUsers = async (req, res) => {
 };
 
 const changeUserRole = async (req, res) => {
-  const { id } = req.params;
-  const { roleName } = req.body;
-
-  if (!id) {
-    throw sendError("User id is required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
-  }
-
-  if (!roleName) {
-    throw sendError("Role name is required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
-  }
+  const { roleName } = req.body || {};
+  const parsedUserId = parseUserId(req.params?.id);
+  validateChangeUserRoleBody(req.body);
 
   const result = await userService.updateUserRole({
-    userId: id,
+    userId: parsedUserId,
     roleName,
   });
 
