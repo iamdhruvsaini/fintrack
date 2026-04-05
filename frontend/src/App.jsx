@@ -1,14 +1,16 @@
 
 import './App.css'
-import DashboardPage from './app/dashboard/dashboard'
 import { ThemeProvider } from './components/providers/theme-provider'
+import { Outlet } from "react-router-dom";
 
 function App() {
 
 
   return (
   <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-    <DashboardPage/>
+    <div>
+      <Outlet></Outlet>
+    </div>
   </ThemeProvider>
   )
 }

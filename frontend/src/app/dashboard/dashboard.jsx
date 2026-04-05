@@ -6,9 +6,9 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar"
 
-import data from "./data.json"
 
-export default function DashboardPage() {
+
+export default function Dashboard() {
   return (
     <SidebarProvider
       style={
