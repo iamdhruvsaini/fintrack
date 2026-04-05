@@ -4,4 +4,5 @@ module.exports = {
   userRepository: require("./user.repository"),
   categoryRepository: require("./category.repository"),
   financialRecordRepository: require("./financial-record.repository"),
+  dashboardRepository: require("./dashboard.repository"),
 };
