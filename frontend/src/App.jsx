@@ -1,13 +1,12 @@
 
 import './App.css'
+import DashboardPage from './app/dashboard/dashboard'
 
 function App() {
 
 
   return (
-    <h1 className="bg-amber-200 text-3xl font-bold underline">
-      Hello World fintrack!
-    </h1>
+    <DashboardPage/>
   )
 }
 
