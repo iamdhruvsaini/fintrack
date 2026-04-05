@@ -13,8 +13,11 @@ const updateFinancialRecordById = (id, payload) => {
   return financialRecordCrudRepository.updateById(id, payload);
 };
 
-const findFinancialRecordById = (id) => {
+const findFinancialRecordById = (id, options = {}) => {
+  const includeDeleted = Boolean(options.includeDeleted);
+
   return financialRecordCrudRepository.getById(id, {
+    includeDeleted,
     include: [
       {
         model: models.User,
@@ -35,6 +38,18 @@ const findFinancialRecordById = (id) => {
       },
     ],
   });
+};
+
+const setFinancialRecordSoftDeleteState = (id, isDeleted) => {
+  return financialRecordCrudRepository.updateById(
+    id,
+    {
+      is_deleted: isDeleted,
+    },
+    {
+      includeDeleted: true,
+    }
+  );
 };
 
 const findFinancialRecordsWithFilters = ({
@@ -108,6 +123,7 @@ const findFinancialRecordsWithFilters = ({
 module.exports = {
   createFinancialRecord,
   updateFinancialRecordById,
+  setFinancialRecordSoftDeleteState,
   findFinancialRecordById,
   findFinancialRecordsWithFilters,
 };

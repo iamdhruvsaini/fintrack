@@ -165,6 +165,20 @@ const validateGetFinancialRecordsQuery = (query) => {
   }
 };
 
+const validateFinancialRecordSoftDeleteBody = (body) => {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw sendError("Request body is required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
+  }
+
+  if (body.is_deleted === undefined) {
+    throw sendError("is_deleted is required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
+  }
+
+  if (typeof body.is_deleted !== "boolean") {
+    throw sendError("is_deleted must be a boolean", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
+  }
+};
+
 module.exports = {
   parseFinancialRecordId,
   parseCategoryId,
@@ -175,4 +189,5 @@ module.exports = {
   validateCreateFinancialRecordBody,
   validateUpdateFinancialRecordBody,
   validateGetFinancialRecordsQuery,
+  validateFinancialRecordSoftDeleteBody,
 };

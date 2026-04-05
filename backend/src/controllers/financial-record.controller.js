@@ -81,9 +81,28 @@ const updateFinancialRecord = async (req, res) => {
   });
 };
 
+const setFinancialRecordSoftDeleteState = async (req, res) => {
+  validators.validateFinancialRecordSoftDeleteBody(req.body);
+
+  const record = await services.financialRecordService.setFinancialRecordSoftDeleteState({
+    recordId: req.params?.id,
+    isDeleted: req.body.is_deleted,
+  });
+
+  sendResponse(res, {
+    message: req.body.is_deleted
+      ? "Financial record soft deleted successfully"
+      : "Financial record restored successfully",
+    data: {
+      record,
+    },
+  });
+};
+
 module.exports = {
   createFinancialRecord,
   getFinancialRecordById,
   getFinancialRecords,
+  setFinancialRecordSoftDeleteState,
   updateFinancialRecord,
 };

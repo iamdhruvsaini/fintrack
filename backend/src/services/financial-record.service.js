@@ -238,9 +238,28 @@ const updateFinancialRecord = async ({ recordId, payload }) => {
   }
 };
 
+const setFinancialRecordSoftDeleteState = async ({ recordId, isDeleted }) => {
+  const parsedRecordId = validators.parseFinancialRecordId(recordId);
+
+  const existingRecord = await repositories.financialRecordRepository.findFinancialRecordById(parsedRecordId, {
+    includeDeleted: true,
+  });
+
+  if (!existingRecord) {
+    throw sendError("Financial record not found", StatusCodes.NOT_FOUND, "FINANCIAL_RECORD_NOT_FOUND");
+  }
+
+  await repositories.financialRecordRepository.setFinancialRecordSoftDeleteState(parsedRecordId, isDeleted);
+
+  return repositories.financialRecordRepository.findFinancialRecordById(parsedRecordId, {
+    includeDeleted: true,
+  });
+};
+
 module.exports = {
   createFinancialRecord,
   getFinancialRecordById,
   getFinancialRecords,
+  setFinancialRecordSoftDeleteState,
   updateFinancialRecord,
 };
