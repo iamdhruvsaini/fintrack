@@ -1,9 +1,8 @@
 const { StatusCodes } = require("http-status-codes");
 const { sendError } = require("../utils");
 
-const ALLOWED_TYPES = new Set(["income", "expense"]);
 const ALLOWED_STATUS = new Set(["active", "inactive"]);
-const ALLOWED_MUTATION_FIELDS = ["name", "type", "status"];
+const ALLOWED_MUTATION_FIELDS = ["name", "description", "status"];
 
 const normalizeCategoryName = (name) => {
   return String(name).trim().replace(/\s+/g, " ");
@@ -17,16 +16,6 @@ const parseCategoryId = (id) => {
   }
 
   return parsed;
-};
-
-const ensureValidCategoryType = (type) => {
-  const normalizedType = String(type).trim().toLowerCase();
-
-  if (!ALLOWED_TYPES.has(normalizedType)) {
-    throw sendError("Invalid category type", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
-  }
-
-  return normalizedType;
 };
 
 const ensureValidCategoryStatus = (status) => {
@@ -44,14 +33,22 @@ const validateCreateCategoryBody = (body) => {
     throw sendError("Request body is required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
   }
 
-  const { name, type } = body;
+  const { name, description, status } = body;
 
-  if (name === undefined || type === undefined) {
-    throw sendError("Category name and type are required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
+  if (name === undefined) {
+    throw sendError("Category name is required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
   }
 
-  if (typeof name !== "string" || typeof type !== "string") {
-    throw sendError("Category name and type must be strings", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
+  if (typeof name !== "string") {
+    throw sendError("Category name must be a string", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
+  }
+
+  if (description !== undefined && typeof description !== "string") {
+    throw sendError("Category description must be a string", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
+  }
+
+  if (status !== undefined && typeof status !== "string") {
+    throw sendError("Category status must be a string", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
   }
 };
 
@@ -64,18 +61,25 @@ const validateUpdateCategoryBody = (body) => {
 
   if (incomingFields.length === 0) {
     throw sendError(
-      "At least one field (name, type, status) is required for update",
+      "At least one field (name, description, status) is required for update",
       StatusCodes.BAD_REQUEST,
       "VALIDATION_ERROR"
     );
   }
 
-  const hasAllowedField = incomingFields.some((field) => ALLOWED_MUTATION_FIELDS.includes(field));
   const invalidFields = incomingFields.filter((field) => !ALLOWED_MUTATION_FIELDS.includes(field));
 
-  if (!hasAllowedField) {
+  if (incomingFields.length === 0) {
     throw sendError(
-      "Invalid payload. Allowed fields: name, type, status",
+      "At least one field (name, description, status) is required for update",
+      StatusCodes.BAD_REQUEST,
+      "VALIDATION_ERROR"
+    );
+  }
+
+  if (incomingFields.length > 0 && invalidFields.length === incomingFields.length) {
+    throw sendError(
+      "Invalid payload. Allowed fields: name, description, status",
       StatusCodes.BAD_REQUEST,
       "VALIDATION_ERROR"
     );
@@ -83,7 +87,7 @@ const validateUpdateCategoryBody = (body) => {
 
   if (invalidFields.length > 0) {
     throw sendError(
-      `Invalid field(s): ${invalidFields.join(", ")}. Allowed fields: name, type, status`,
+      `Invalid field(s): ${invalidFields.join(", ")}. Allowed fields: name, description, status`,
       StatusCodes.BAD_REQUEST,
       "VALIDATION_ERROR"
     );
@@ -93,8 +97,8 @@ const validateUpdateCategoryBody = (body) => {
     throw sendError("Category name must be a string", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
   }
 
-  if (body.type !== undefined && typeof body.type !== "string") {
-    throw sendError("Category type must be a string", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
+  if (body.description !== undefined && typeof body.description !== "string") {
+    throw sendError("Category description must be a string", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
   }
 
   if (body.status !== undefined && typeof body.status !== "string") {
@@ -105,7 +109,6 @@ const validateUpdateCategoryBody = (body) => {
 module.exports = {
   normalizeCategoryName,
   parseCategoryId,
-  ensureValidCategoryType,
   ensureValidCategoryStatus,
   validateCreateCategoryBody,
   validateUpdateCategoryBody,

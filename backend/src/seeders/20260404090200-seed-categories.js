@@ -9,7 +9,7 @@ module.exports = {
       {
         id: 1,
         name: 'Salary',
-        type: 'income',
+        description: 'Primary salary income category',
         status: 'active',
         is_deleted: false,
         createdAt: now,
@@ -18,7 +18,7 @@ module.exports = {
       {
         id: 2,
         name: 'Freelance',
-        type: 'income',
+        description: 'Side project and contract income category',
         status: 'active',
         is_deleted: false,
         createdAt: now,
@@ -27,7 +27,7 @@ module.exports = {
       {
         id: 3,
         name: 'Rent',
-        type: 'expense',
+        description: 'Housing-related recurring payment category',
         status: 'active',
         is_deleted: false,
         createdAt: now,
@@ -36,7 +36,7 @@ module.exports = {
       {
         id: 4,
         name: 'Food',
-        type: 'expense',
+        description: 'Dining and grocery spending category',
         status: 'active',
         is_deleted: false,
         createdAt: now,

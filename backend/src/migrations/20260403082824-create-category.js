@@ -14,9 +14,9 @@ module.exports = {
         unique: true,
         type: Sequelize.STRING,
       },
-      type: {
-        allowNull: false,
-        type: Sequelize.ENUM('income', 'expense'),
+      description: {
+        allowNull: true,
+        type: Sequelize.TEXT,
       },
       status: {
         allowNull: false,
@@ -38,11 +38,9 @@ module.exports = {
       }
     });
 
-    await queryInterface.addIndex('Categories', ['type']);
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Categories');
-    await queryInterface.sequelize.query("DROP TYPE IF EXISTS \"enum_Categories_type\";");
     await queryInterface.sequelize.query("DROP TYPE IF EXISTS \"enum_Categories_status\";");
   }
 };

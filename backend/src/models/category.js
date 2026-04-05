@@ -22,9 +22,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
     },
-    type: {
-      type: DataTypes.ENUM('income', 'expense'),
-      allowNull: false,
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     status: {
       type: DataTypes.ENUM('active', 'inactive'),

@@ -30,10 +30,10 @@ const getCategoryById = async (req, res) => {
 const createCategory = async (req, res) => {
   validateCreateCategoryBody(req.body);
 
-  const { name, type, status } = req.body || {};
+  const { name, description, status } = req.body || {};
   const category = await categoryService.createCategory({
     name,
-    type,
+    description,
     status,
   });
 

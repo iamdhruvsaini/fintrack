@@ -4,14 +4,12 @@ const { sendError } = require("../utils");
 const {
   normalizeCategoryName,
   parseCategoryId,
-  ensureValidCategoryType,
   ensureValidCategoryStatus,
 } = require("../validators");
 
 const getCategories = async ({
   page = 1,
   limit = 10,
-  type,
   status,
   search,
   includeInactive,
@@ -21,14 +19,12 @@ const getCategories = async ({
   const parsedPage = Number(page) > 0 ? Number(page) : 1;
   const parsedLimit = Number(limit) > 0 ? Math.min(Number(limit), 100) : 10;
 
-  const normalizedType = type ? ensureValidCategoryType(type) : undefined;
   const normalizedStatus = status ? ensureValidCategoryStatus(status) : undefined;
   const parsedIncludeInactive = String(includeInactive).toLowerCase() === "true";
 
   const { rows, count } = await categoryRepository.findCategoriesWithFilters({
     page: parsedPage,
     limit: parsedLimit,
-    type: normalizedType,
     status: normalizedStatus,
     search: search ? String(search).trim() : undefined,
     includeInactive: parsedIncludeInactive,
@@ -62,14 +58,24 @@ const getCategoryById = async (id) => {
   return category;
 };
 
-const createCategory = async ({ name, type, status = "active" }) => {
+const normalizeDescription = (description) => {
+  if (description === undefined || description === null) {
+    return null;
+  }
+
+  const normalizedDescription = String(description).trim().replace(/\s+/g, " ");
+
+  return normalizedDescription || null;
+};
+
+const createCategory = async ({ name, description, status = "active" }) => {
   const normalizedName = normalizeCategoryName(name);
 
   if (!normalizedName) {
     throw sendError("Category name is required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
   }
 
-  const normalizedType = ensureValidCategoryType(type);
+  const normalizedDescription = normalizeDescription(description);
   const normalizedStatus = ensureValidCategoryStatus(status);
 
   const existingCategory = await categoryRepository.findCategoryByName(normalizedName, {
@@ -82,7 +88,7 @@ const createCategory = async ({ name, type, status = "active" }) => {
 
   return categoryRepository.createCategory({
     name: normalizedName,
-    type: normalizedType,
+    description: normalizedDescription,
     status: normalizedStatus,
     is_deleted: false,
   });
@@ -116,8 +122,8 @@ const updateCategory = async (id, payload) => {
     updates.name = normalizedName;
   }
 
-  if (payload.type !== undefined) {
-    updates.type = ensureValidCategoryType(payload.type);
+  if (payload.description !== undefined) {
+    updates.description = normalizeDescription(payload.description);
   }
 
   if (payload.status !== undefined) {

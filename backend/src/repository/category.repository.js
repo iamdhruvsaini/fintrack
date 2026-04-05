@@ -9,7 +9,6 @@ const ALLOWED_SORT_FIELDS = new Set(["createdAt", "updatedAt", "name"]);
 const findCategoriesWithFilters = async ({
   page,
   limit,
-  type,
   status,
   search,
   includeInactive,
@@ -20,10 +19,6 @@ const findCategoriesWithFilters = async ({
 
   const where = {};
 
-  if (type) {
-    where.type = type;
-  }
-
   if (status) {
     where.status = status;
   } else if (!includeInactive) {
@@ -31,9 +26,10 @@ const findCategoriesWithFilters = async ({
   }
 
   if (search) {
-    where.name = {
-      [Op.iLike]: `%${search}%`,
-    };
+    where[Op.or] = [
+      { name: { [Op.iLike]: `%${search}%` } },
+      { description: { [Op.iLike]: `%${search}%` } },
+    ];
   }
 
   const safeSortBy = ALLOWED_SORT_FIELDS.has(sortBy) ? sortBy : "createdAt";
