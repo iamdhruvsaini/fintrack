@@ -1,13 +1,10 @@
 const { StatusCodes } = require("http-status-codes");
 const { sendResponse } = require("../utils");
-const { categoryService } = require("../services");
-const {
-  validateCreateCategoryBody,
-  validateUpdateCategoryBody,
-} = require("../validators");
+const services = require("../services");
+const validators = require("../validators");
 
 const getCategories = async (req, res) => {
-  const result = await categoryService.getCategories(req.query || {});
+  const result = await services.categoryService.getCategories(req.query || {});
 
   sendResponse(res, {
     message: "Categories fetched successfully",
@@ -17,7 +14,7 @@ const getCategories = async (req, res) => {
 
 const getCategoryById = async (req, res) => {
   const { id } = req.params;
-  const category = await categoryService.getCategoryById(id);
+  const category = await services.categoryService.getCategoryById(id);
 
   sendResponse(res, {
     message: "Category fetched successfully",
@@ -28,10 +25,10 @@ const getCategoryById = async (req, res) => {
 };
 
 const createCategory = async (req, res) => {
-  validateCreateCategoryBody(req.body);
+  validators.validateCreateCategoryBody(req.body);
 
   const { name, description, status } = req.body || {};
-  const category = await categoryService.createCategory({
+  const category = await services.categoryService.createCategory({
     name,
     description,
     status,
@@ -48,9 +45,9 @@ const createCategory = async (req, res) => {
 
 const updateCategory = async (req, res) => {
   const { id } = req.params;
-  validateUpdateCategoryBody(req.body);
+  validators.validateUpdateCategoryBody(req.body);
 
-  const category = await categoryService.updateCategory(id, req.body || {});
+  const category = await services.categoryService.updateCategory(id, req.body || {});
 
   sendResponse(res, {
     message: "Category updated successfully",
@@ -62,7 +59,7 @@ const updateCategory = async (req, res) => {
 
 const deleteCategory = async (req, res) => {
   const { id } = req.params;
-  const result = await categoryService.deleteCategory(id);
+  const result = await services.categoryService.deleteCategory(id);
 
   sendResponse(res, {
     message: "Category deleted successfully",

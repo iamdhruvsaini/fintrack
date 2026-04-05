@@ -2,7 +2,7 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
-const { User, Role } = require("../models");
+const models = require("../models");
 
 passport.use(
   new LocalStrategy(
@@ -13,7 +13,7 @@ passport.use(
     (email, password, done) => {
       User.findOne({
         where: { email },
-        include: [{ model: Role, as: "role" }],
+        include: [{ model: models.Role, as: "role" }],
       })
         .then((user) => {
           if (!user) {
@@ -39,8 +39,8 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-  User.findByPk(id, {
-    include: [{ model: Role, as: "role" }],
+  models.User.findByPk(id, {
+    include: [{ model: models.Role, as: "role" }],
   })
     .then((user) => done(null, user))
     .catch((err) => done(err));

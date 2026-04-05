@@ -1,11 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
-const { categoryRepository } = require("../repository");
+const repositories = require("../repository");
 const { sendError } = require("../utils");
-const {
-  normalizeCategoryName,
-  parseCategoryId,
-  ensureValidCategoryStatus,
-} = require("../validators");
+const validators = require("../validators");
 
 const getCategories = async ({
   page = 1,
@@ -19,10 +15,10 @@ const getCategories = async ({
   const parsedPage = Number(page) > 0 ? Number(page) : 1;
   const parsedLimit = Number(limit) > 0 ? Math.min(Number(limit), 100) : 10;
 
-  const normalizedStatus = status ? ensureValidCategoryStatus(status) : undefined;
+  const normalizedStatus = status ? validators.ensureValidCategoryStatus(status) : undefined;
   const parsedIncludeInactive = String(includeInactive).toLowerCase() === "true";
 
-  const { rows, count } = await categoryRepository.findCategoriesWithFilters({
+  const { rows, count } = await repositories.categoryRepository.findCategoriesWithFilters({
     page: parsedPage,
     limit: parsedLimit,
     status: normalizedStatus,
@@ -48,8 +44,8 @@ const getCategories = async ({
 };
 
 const getCategoryById = async (id) => {
-  const parsedId = parseCategoryId(id);
-  const category = await categoryRepository.findCategoryById(parsedId);
+  const parsedId = validators.parseCategoryId(id);
+  const category = await repositories.categoryRepository.findCategoryById(parsedId);
 
   if (!category) {
     throw sendError("Category not found", StatusCodes.NOT_FOUND, "CATEGORY_NOT_FOUND");
@@ -69,16 +65,16 @@ const normalizeDescription = (description) => {
 };
 
 const createCategory = async ({ name, description, status = "active" }) => {
-  const normalizedName = normalizeCategoryName(name);
+  const normalizedName = validators.normalizeCategoryName(name);
 
   if (!normalizedName) {
     throw sendError("Category name is required", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
   }
 
   const normalizedDescription = normalizeDescription(description);
-  const normalizedStatus = ensureValidCategoryStatus(status);
+  const normalizedStatus = validators.ensureValidCategoryStatus(status);
 
-  const existingCategory = await categoryRepository.findCategoryByName(normalizedName, {
+  const existingCategory = await repositories.categoryRepository.findCategoryByName(normalizedName, {
     includeDeleted: true,
   });
 
@@ -86,7 +82,7 @@ const createCategory = async ({ name, description, status = "active" }) => {
     throw sendError("Category name already exists", StatusCodes.CONFLICT, "CATEGORY_ALREADY_EXISTS");
   }
 
-  return categoryRepository.createCategory({
+  return repositories.categoryRepository.createCategory({
     name: normalizedName,
     description: normalizedDescription,
     status: normalizedStatus,
@@ -95,8 +91,8 @@ const createCategory = async ({ name, description, status = "active" }) => {
 };
 
 const updateCategory = async (id, payload) => {
-  const parsedId = parseCategoryId(id);
-  const category = await categoryRepository.findCategoryById(parsedId);
+  const parsedId = validators.parseCategoryId(id);
+  const category = await repositories.categoryRepository.findCategoryById(parsedId);
 
   if (!category) {
     throw sendError("Category not found", StatusCodes.NOT_FOUND, "CATEGORY_NOT_FOUND");
@@ -105,13 +101,13 @@ const updateCategory = async (id, payload) => {
   const updates = {};
 
   if (payload.name !== undefined) {
-    const normalizedName = normalizeCategoryName(payload.name);
+    const normalizedName = validators.normalizeCategoryName(payload.name);
 
     if (!normalizedName) {
       throw sendError("Category name cannot be empty", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
     }
 
-    const existingCategory = await categoryRepository.findCategoryByName(normalizedName, {
+    const existingCategory = await repositories.categoryRepository.findCategoryByName(normalizedName, {
       includeDeleted: true,
     });
 
@@ -127,21 +123,21 @@ const updateCategory = async (id, payload) => {
   }
 
   if (payload.status !== undefined) {
-    updates.status = ensureValidCategoryStatus(payload.status);
+    updates.status = validators.ensureValidCategoryStatus(payload.status);
   }
 
-  return categoryRepository.updateCategoryById(parsedId, updates);
+  return repositories.categoryRepository.updateCategoryById(parsedId, updates);
 };
 
 const deleteCategory = async (id) => {
-  const parsedId = parseCategoryId(id);
-  const category = await categoryRepository.findCategoryById(parsedId);
+  const parsedId = validators.parseCategoryId(id);
+  const category = await repositories.categoryRepository.findCategoryById(parsedId);
 
   if (!category) {
     throw sendError("Category not found", StatusCodes.NOT_FOUND, "CATEGORY_NOT_FOUND");
   }
 
-  await categoryRepository.deleteCategoryById(parsedId);
+  await repositories.categoryRepository.deleteCategoryById(parsedId);
 
   return {
     id: parsedId,

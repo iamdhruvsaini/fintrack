@@ -1,16 +1,12 @@
 const { StatusCodes } = require("http-status-codes");
 const { sendResponse } = require("../utils");
-const { financialRecordService } = require("../services");
-const {
-  validateCreateFinancialRecordBody,
-  validateUpdateFinancialRecordBody,
-  validateGetFinancialRecordsQuery,
-} = require("../validators");
+const services = require("../services");
+const validators = require("../validators");
 
 const getFinancialRecords = async (req, res) => {
-  validateGetFinancialRecordsQuery(req.query || {});
+  validators.validateGetFinancialRecordsQuery(req.query || {});
 
-  const result = await financialRecordService.getFinancialRecords({
+  const result = await services.financialRecordService.getFinancialRecords({
     userId: req.user?.id,
     page: req.query?.page,
     limit: req.query?.limit,
@@ -33,7 +29,7 @@ const getFinancialRecords = async (req, res) => {
 };
 
 const getFinancialRecordById = async (req, res) => {
-  const record = await financialRecordService.getFinancialRecordById({
+  const record = await services.financialRecordService.getFinancialRecordById({
     recordId: req.params?.id,
   });
 
@@ -46,12 +42,12 @@ const getFinancialRecordById = async (req, res) => {
 };
 
 const createFinancialRecord = async (req, res) => {
-  validateCreateFinancialRecordBody(req.body);
+  validators.validateCreateFinancialRecordBody(req.body);
 
   const { amount, type, notes, status } = req.body || {};
   const categoryId = req.body?.category_id ?? req.body?.categoryId;
 
-  const record = await financialRecordService.createFinancialRecord({
+  const record = await services.financialRecordService.createFinancialRecord({
     userId: req.user?.id,
     categoryId,
     amount,
@@ -70,9 +66,9 @@ const createFinancialRecord = async (req, res) => {
 };
 
 const updateFinancialRecord = async (req, res) => {
-  validateUpdateFinancialRecordBody(req.body);
+  validators.validateUpdateFinancialRecordBody(req.body);
 
-  const record = await financialRecordService.updateFinancialRecord({
+  const record = await services.financialRecordService.updateFinancialRecord({
     recordId: req.params?.id,
     payload: req.body || {},
   });

@@ -1,11 +1,11 @@
 const { sendResponse } = require("../utils");
-const { userService } = require("../services");
-const { parseUserId, validateChangeUserRoleBody } = require("../validators");
+const services = require("../services");
+const validators = require("../validators");
 
 const getUsers = async (req, res) => {
   const { page, limit, name, role, search } = req.query || {};
 
-  const result = await userService.getUsers({
+  const result = await services.userService.getUsers({
     page,
     limit,
     name,
@@ -21,10 +21,10 @@ const getUsers = async (req, res) => {
 
 const changeUserRole = async (req, res) => {
   const { roleName } = req.body || {};
-  const parsedUserId = parseUserId(req.params?.id);
-  validateChangeUserRoleBody(req.body);
+  const parsedUserId = validators.parseUserId(req.params?.id);
+  validators.validateChangeUserRoleBody(req.body);
 
-  const result = await userService.updateUserRole({
+  const result = await services.userService.updateUserRole({
     userId: parsedUserId,
     roleName,
   });

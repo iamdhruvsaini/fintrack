@@ -1,27 +1,19 @@
 const { StatusCodes } = require("http-status-codes");
 const { ValidationError, ForeignKeyConstraintError } = require("sequelize");
-const { financialRecordRepository, categoryRepository } = require("../repository");
+const repositories = require("../repository");
 const { sendError, userToPublic } = require("../utils");
-const {
-  parseFinancialRecordId,
-  parseUserId,
-  parseCategoryId,
-  parseRecordAmount,
-  ensureValidRecordType,
-  ensureValidRecordStatus,
-  normalizeNotes,
-} = require("../validators");
+const validators = require("../validators");
 
 const createFinancialRecord = async ({ userId, categoryId, amount, type, notes, status = "active" }) => {
-  const parsedUserId = parseUserId(userId);
-  const parsedCategoryId = parseCategoryId(categoryId);
-  const parsedAmount = parseRecordAmount(amount);
+  const parsedUserId = validators.parseUserId(userId);
+  const parsedCategoryId = validators.parseCategoryId(categoryId);
+  const parsedAmount = validators.parseRecordAmount(amount);
   const parsedDate = new Date();
-  const normalizedType = ensureValidRecordType(type);
-  const normalizedStatus = ensureValidRecordStatus(status);
-  const normalizedNotes = normalizeNotes(notes);
+  const normalizedType = validators.ensureValidRecordType(type);
+  const normalizedStatus = validators.ensureValidRecordStatus(status);
+  const normalizedNotes = validators.normalizeNotes(notes);
 
-  const category = await categoryRepository.findCategoryById(parsedCategoryId);
+  const category = await repositories.categoryRepository.findCategoryById(parsedCategoryId);
 
   if (!category) {
     throw sendError("Category not found", StatusCodes.NOT_FOUND, "CATEGORY_NOT_FOUND");
@@ -32,7 +24,7 @@ const createFinancialRecord = async ({ userId, categoryId, amount, type, notes, 
   }
 
   try {
-    const createdRecord = await financialRecordRepository.createFinancialRecord({
+    const createdRecord = await repositories.financialRecordRepository.createFinancialRecord({
       user_id: parsedUserId,
       category_id: parsedCategoryId,
       amount: parsedAmount,
@@ -43,7 +35,7 @@ const createFinancialRecord = async ({ userId, categoryId, amount, type, notes, 
       is_deleted: false,
     });
 
-    return financialRecordRepository.findFinancialRecordById(createdRecord.id);
+    return repositories.financialRecordRepository.findFinancialRecordById(createdRecord.id);
   } catch (error) {
     if (error instanceof ValidationError) {
       throw sendError("Invalid financial record payload", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
@@ -72,13 +64,13 @@ const getFinancialRecords = async ({
   minAmount,
   maxAmount,
 }) => {
-  const parsedUserId = parseUserId(userId);
+  const parsedUserId = validators.parseUserId(userId);
   const parsedPage = Number(page) > 0 ? Number(page) : 1;
   const parsedLimit = Number(limit) > 0 ? Math.min(Number(limit), 100) : 10;
 
   const parsedCategoryId =
     categoryId !== undefined && categoryId !== null && String(categoryId).trim() !== ""
-      ? parseCategoryId(categoryId)
+      ? validators.parseCategoryId(categoryId)
       : undefined;
 
   const parsedCategoryName =
@@ -88,12 +80,12 @@ const getFinancialRecords = async ({
 
   const parsedType =
     type !== undefined && type !== null && String(type).trim() !== ""
-      ? ensureValidRecordType(type)
+      ? validators.ensureValidRecordType(type)
       : undefined;
 
   const parsedStatus =
     status !== undefined && status !== null && String(status).trim() !== ""
-      ? ensureValidRecordStatus(status)
+      ? validators.ensureValidRecordStatus(status)
       : undefined;
 
   const parsedDate =
@@ -113,17 +105,17 @@ const getFinancialRecords = async ({
 
   const parsedAmount =
     amount !== undefined && amount !== null && String(amount).trim() !== ""
-      ? parseRecordAmount(amount)
+      ? validators.parseRecordAmount(amount)
       : undefined;
 
   const parsedMinAmount =
     minAmount !== undefined && minAmount !== null && String(minAmount).trim() !== ""
-      ? parseRecordAmount(minAmount)
+      ? validators.parseRecordAmount(minAmount)
       : undefined;
 
   const parsedMaxAmount =
     maxAmount !== undefined && maxAmount !== null && String(maxAmount).trim() !== ""
-      ? parseRecordAmount(maxAmount)
+      ? validators.parseRecordAmount(maxAmount)
       : undefined;
 
   if (
@@ -142,7 +134,7 @@ const getFinancialRecords = async ({
     throw sendError("dateFrom cannot be later than dateTo", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");
   }
 
-  const { rows, count } = await financialRecordRepository.findFinancialRecordsWithFilters({
+  const { rows, count } = await repositories.financialRecordRepository.findFinancialRecordsWithFilters({
     userId: parsedUserId,
     categoryId: parsedCategoryId,
     categoryName: parsedCategoryName,
@@ -174,8 +166,8 @@ const getFinancialRecords = async ({
 };
 
 const getFinancialRecordById = async ({ recordId }) => {
-  const parsedRecordId = parseFinancialRecordId(recordId);
-  const record = await financialRecordRepository.findFinancialRecordById(parsedRecordId);
+  const parsedRecordId = validators.parseFinancialRecordId(recordId);
+  const record = await repositories.financialRecordRepository.findFinancialRecordById(parsedRecordId);
 
   if (!record) {
     throw sendError("Financial record not found", StatusCodes.NOT_FOUND, "FINANCIAL_RECORD_NOT_FOUND");
@@ -188,9 +180,9 @@ const getFinancialRecordById = async ({ recordId }) => {
 };
 
 const updateFinancialRecord = async ({ recordId, payload }) => {
-  const parsedRecordId = parseFinancialRecordId(recordId);
+  const parsedRecordId = validators.parseFinancialRecordId(recordId);
 
-  const existingRecord = await financialRecordRepository.findFinancialRecordById(parsedRecordId);
+  const existingRecord = await repositories.financialRecordRepository.findFinancialRecordById(parsedRecordId);
 
   if (!existingRecord) {
     throw sendError("Financial record not found", StatusCodes.NOT_FOUND, "FINANCIAL_RECORD_NOT_FOUND");
@@ -200,8 +192,8 @@ const updateFinancialRecord = async ({ recordId, payload }) => {
   const incomingCategoryId = payload.category_id ?? payload.categoryId;
 
   if (incomingCategoryId !== undefined) {
-    const parsedCategoryId = parseCategoryId(incomingCategoryId);
-    const category = await categoryRepository.findCategoryById(parsedCategoryId);
+    const parsedCategoryId = validators.parseCategoryId(incomingCategoryId);
+    const category = await repositories.categoryRepository.findCategoryById(parsedCategoryId);
 
     if (!category) {
       throw sendError("Category not found", StatusCodes.NOT_FOUND, "CATEGORY_NOT_FOUND");
@@ -215,24 +207,24 @@ const updateFinancialRecord = async ({ recordId, payload }) => {
   }
 
   if (payload.amount !== undefined) {
-    updates.amount = parseRecordAmount(payload.amount);
+    updates.amount = validators.parseRecordAmount(payload.amount);
   }
 
   if (payload.type !== undefined) {
-    updates.type = ensureValidRecordType(payload.type);
+    updates.type = validators.ensureValidRecordType(payload.type);
   }
 
   if (payload.notes !== undefined) {
-    updates.notes = normalizeNotes(payload.notes);
+    updates.notes = validators.normalizeNotes(payload.notes);
   }
 
   if (payload.status !== undefined) {
-    updates.status = ensureValidRecordStatus(payload.status);
+    updates.status = validators.ensureValidRecordStatus(payload.status);
   }
 
   try {
-    await financialRecordRepository.updateFinancialRecordById(parsedRecordId, updates);
-    return financialRecordRepository.findFinancialRecordById(parsedRecordId);
+    await repositories.financialRecordRepository.updateFinancialRecordById(parsedRecordId, updates);
+    return repositories.financialRecordRepository.findFinancialRecordById(parsedRecordId);
   } catch (error) {
     if (error instanceof ValidationError) {
       throw sendError("Invalid financial record payload", StatusCodes.BAD_REQUEST, "VALIDATION_ERROR");

@@ -1,8 +1,8 @@
 const { Op } = require("sequelize");
-const { Category } = require("../models");
+const models = require("../models");
 const CrudRepository = require("./crud.repository");
 
-const categoryCrudRepository = new CrudRepository(Category);
+const categoryCrudRepository = new CrudRepository(models.Category);
 
 const ALLOWED_SORT_FIELDS = new Set(["createdAt", "updatedAt", "name"]);
 
@@ -35,7 +35,7 @@ const findCategoriesWithFilters = async ({
   const safeSortBy = ALLOWED_SORT_FIELDS.has(sortBy) ? sortBy : "createdAt";
   const safeSortOrder = String(sortOrder).toUpperCase() === "ASC" ? "ASC" : "DESC";
 
-  return Category.findAndCountAll({
+  return models.Category.findAndCountAll({
     where: categoryCrudRepository.buildWhere(where),
     limit,
     offset,

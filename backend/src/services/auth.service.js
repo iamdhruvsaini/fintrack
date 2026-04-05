@@ -1,12 +1,12 @@
 const bcrypt = require("bcrypt");
 const { StatusCodes } = require("http-status-codes");
-const { authRepository } = require("../repository");
+const repositories = require("../repository");
 const { sendError, userToPublic } = require("../utils");
 
 const DEFAULT_REGISTER_ROLE = "viewer";
 
 const login = async ({ email, password }) => {
-	const user = await authRepository.findUserByEmail(email);
+	const user = await repositories.authRepository.findUserByEmail(email);
 
 	if (!user) {
 		throw sendError("Invalid credentials", StatusCodes.UNAUTHORIZED, "INVALID_CREDENTIALS");
@@ -36,13 +36,13 @@ const register = async ({ name, email, password, roleName = DEFAULT_REGISTER_ROL
 	const normalizedEmail = email.trim().toLowerCase();
 	const normalizedRoleName = (roleName || DEFAULT_REGISTER_ROLE).trim().toLowerCase();
 
-	const existingUser = await authRepository.findUserByEmail(normalizedEmail);
+	const existingUser = await repositories.authRepository.findUserByEmail(normalizedEmail);
 
 	if (existingUser) {
 		throw sendError("Email already registered", StatusCodes.CONFLICT, "EMAIL_ALREADY_EXISTS");
 	}
 
-	const role = await authRepository.findActiveRoleByName(normalizedRoleName);
+	const role = await repositories.authRepository.findActiveRoleByName(normalizedRoleName);
 
 	if (!role) {
 		throw sendError("Invalid or inactive role", StatusCodes.BAD_REQUEST, "INVALID_ROLE");
@@ -50,7 +50,7 @@ const register = async ({ name, email, password, roleName = DEFAULT_REGISTER_ROL
 
 	const password_hash = await bcrypt.hash(password, 10);
 
-	const createdUser = await authRepository.createUser({
+	const createdUser = await repositories.authRepository.createUser({
 		name: name.trim(),
 		email: normalizedEmail,
 		password_hash,
@@ -59,7 +59,7 @@ const register = async ({ name, email, password, roleName = DEFAULT_REGISTER_ROL
 		is_deleted: false,
 	});
 
-	const user = await authRepository.findUserById(createdUser.id);
+	const user = await repositories.authRepository.findUserById(createdUser.id);
 	
 
 	return {

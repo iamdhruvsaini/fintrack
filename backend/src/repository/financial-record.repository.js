@@ -1,9 +1,9 @@
 const { QueryTypes } = require("sequelize");
-const { FinancialRecord, Category, User, Role, sequelize } = require("../models");
+const models = require("../models");
 const CrudRepository = require("./crud.repository");
 const queries = require("../queries");
 
-const financialRecordCrudRepository = new CrudRepository(FinancialRecord);
+const financialRecordCrudRepository = new CrudRepository(models.FinancialRecord);
 
 const createFinancialRecord = (payload) => {
   return financialRecordCrudRepository.create(payload);
@@ -17,19 +17,19 @@ const findFinancialRecordById = (id) => {
   return financialRecordCrudRepository.getById(id, {
     include: [
       {
-        model: User,
+        model: models.User,
         as: "user",
         attributes: ["id", "name", "email", "role_id", "status"],
         include: [
           {
-            model: Role,
+            model: models.Role,
             as: "role",
             attributes: ["id", "name"],
           },
         ],
       },
       {
-        model: Category,
+        model: models.Category,
         as: "category",
         attributes: ["id", "name", "description", "status"],
       },
@@ -69,11 +69,11 @@ const findFinancialRecordsWithFilters = ({
   });
 
   return Promise.all([
-    sequelize.query(rowsQuery, {
+    models.sequelize.query(rowsQuery, {
       replacements,
       type: QueryTypes.SELECT,
     }),
-    sequelize.query(countQuery, {
+    models.sequelize.query(countQuery, {
       replacements,
       type: QueryTypes.SELECT,
     }),

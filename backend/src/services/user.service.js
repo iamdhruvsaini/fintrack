@@ -1,4 +1,4 @@
-const { userRepository } = require("../repository");
+const repositories = require("../repository");
 const { StatusCodes } = require("http-status-codes");
 const { sendError } = require("../utils");
 const { userToPublic } = require("../utils");
@@ -13,7 +13,7 @@ const getUsers = async ({
   const parsedPage = Number(page) > 0 ? Number(page) : 1;
   const parsedLimit = Number(limit) > 0 ? Math.min(Number(limit), 100) : 10;
 
-  const { rows, count } = await userRepository.findUsersWithFilters({
+  const { rows, count } = await repositories.userRepository.findUsersWithFilters({
     page: parsedPage,
     limit: parsedLimit,
     name: name ? String(name).trim() : undefined,
@@ -39,13 +39,13 @@ const getUsers = async ({
 const updateUserRole = async ({ userId, roleName }) => {
   const normalizedRoleName = String(roleName).trim().toLowerCase();
 
-  const user = await userRepository.findUserById(userId);
+  const user = await repositories.userRepository.findUserById(userId);
 
   if (!user) {
     throw sendError("User not found", StatusCodes.NOT_FOUND, "USER_NOT_FOUND");
   }
 
-  const role = await userRepository.findActiveRoleByName(normalizedRoleName);
+  const role = await repositories.userRepository.findActiveRoleByName(normalizedRoleName);
 
   if (!role) {
     throw sendError("Invalid or inactive role", StatusCodes.BAD_REQUEST, "INVALID_ROLE");
@@ -59,11 +59,11 @@ const updateUserRole = async ({ userId, roleName }) => {
     };
   }
 
-  await userRepository.updateUserById(userId, {
+  await repositories.userRepository.updateUserById(userId, {
     role_id: role.id,
   });
 
-  const updatedUser = await userRepository.findUserById(userId);
+  const updatedUser = await repositories.userRepository.findUserById(userId);
 
   return {
     user: updatedUser,

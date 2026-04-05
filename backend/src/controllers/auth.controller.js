@@ -1,14 +1,14 @@
 const { StatusCodes } = require("http-status-codes");
 const { sendResponse, sendError } = require("../utils");
-const { authService } = require("../services");
-const { validateLoginBody, validateRegisterBody } = require("../validators");
+const services = require("../services");
+const validators = require("../validators");
 
 const login = async (req, res) => {
-	validateLoginBody(req.body);
+	validators.validateLoginBody(req.body);
 
 	const { email, password } = req.body || {};
 
-	const { user, publicUser } = await authService.login({ email, password });
+	const { user, publicUser } = await services.authService.login({ email, password });
 
 	await new Promise((resolve, reject) => {
 		req.login({ id: user.id }, (error) => {
@@ -29,11 +29,11 @@ const login = async (req, res) => {
 };
 
 const register = async (req, res) => {
-	validateRegisterBody(req.body);
+	validators.validateRegisterBody(req.body);
 
 	const { name, email, password, roleName } = req.body || {};
 
-	const { publicUser } = await authService.register({
+	const { publicUser } = await services.authService.register({
 		name,
 		email,
 		password,
@@ -50,7 +50,7 @@ const register = async (req, res) => {
 };
 
 const getProfile = async (req, res) => {
-	const { publicUser } = await authService.getProfile(req.user);
+	const { publicUser } = await services.authService.getProfile(req.user);
 	sendResponse(res, {
 		message: "Profile fetched successfully",
 		data: {
@@ -60,7 +60,7 @@ const getProfile = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-	await authService.logout(req);
+	await services.authService.logout(req);
 
 	res.clearCookie("connect.sid", {
 		httpOnly: true,

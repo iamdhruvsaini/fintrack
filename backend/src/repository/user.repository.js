@@ -1,8 +1,8 @@
 const { Op } = require("sequelize");
-const { User, Role } = require("../models");
+const models = require("../models");
 const CrudRepository = require("./crud.repository");
 
-const userCrudRepository = new CrudRepository(User);
+const userCrudRepository = new CrudRepository(models.User);
 
 const findUsersWithFilters = async ({
   page,
@@ -41,11 +41,11 @@ const findUsersWithFilters = async ({
     };
   }
 
-  return User.findAndCountAll({
+  return models.User.findAndCountAll({
     where,
     include: [
       {
-        model: Role,
+        model: models.Role,
         as: "role",
         attributes: ["id", "name"],
         where: roleWhere,
@@ -63,7 +63,7 @@ const findUserById = (id) => {
   return userCrudRepository.getById(id, {
     include: [
       {
-        model: Role,
+        model: models.Role,
         as: "role",
         attributes: ["id", "name", "status"],
       },
@@ -72,7 +72,7 @@ const findUserById = (id) => {
 };
 
 const findActiveRoleByName = (name) => {
-  return Role.findOne({
+  return models.Role.findOne({
     where: {
       name,
       status: "active",
