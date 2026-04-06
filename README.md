@@ -1,4 +1,20 @@
-# FinTrack - Finance Data Processing and Access Control Backend
+# FinTrack
+
+Finance data processing platform with role-based access control, analytics APIs, and a modern React dashboard.
+
+[![Node.js](https://img.shields.io/badge/Node.js-Backend-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express.js-API-000000?logo=express&logoColor=white)](https://expressjs.com/)
+[![React](https://img.shields.io/badge/React-Frontend-61DAFB?logo=react&logoColor=111827)](https://react.dev/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Redis](https://img.shields.io/badge/Redis-Session%20Store-DC382D?logo=redis&logoColor=white)](https://redis.io/)
+[![Sequelize](https://img.shields.io/badge/Sequelize-ORM-52B0E7?logo=sequelize&logoColor=white)](https://sequelize.org/)
+[![Vite](https://img.shields.io/badge/Vite-Frontend%20Build-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![License](https://img.shields.io/badge/License-MIT-22C55E)](LICENSE)
+
+## Quick Links
+
+[![Postman Docs](https://img.shields.io/badge/Postman-API%20Docs-FF6C37?logo=postman&logoColor=white)](https://documenter.getpostman.com/view/39331953/2sBXiqEUQ9)
+[![Live Backend](https://img.shields.io/badge/Render-Live%20Backend-46E3B7?logo=render&logoColor=111827)](https://fintrack-d70e.onrender.com)
 
 ## Objective
 
