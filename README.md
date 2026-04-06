@@ -16,6 +16,9 @@ Finance data processing platform with role-based access control, analytics APIs,
 [![Postman Docs](https://img.shields.io/badge/Postman-API%20Docs-FF6C37?logo=postman&logoColor=white)](https://documenter.getpostman.com/view/39331953/2sBXiqEUQ9)
 [![Live Backend](https://img.shields.io/badge/Render-Live%20Backend-46E3B7?logo=render&logoColor=111827)](https://fintrack-d70e.onrender.com)
 
+## DB Schema
+<img width="1112" height="1005" alt="Untitled" src="https://github.com/user-attachments/assets/93cbaac6-60dd-4d61-8848-1929f176cddd" />
+
 ## Objective
 
 This project implements a backend for a finance dashboard system and is structured to demonstrate:
