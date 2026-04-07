@@ -19,6 +19,94 @@ Finance data processing platform with role-based access control, analytics APIs,
 ## DB Schema
 <img width="1112" height="1005" alt="Untitled" src="https://github.com/user-attachments/assets/93cbaac6-60dd-4d61-8848-1929f176cddd" />
 
+## Folder Structure
+```
+└── 📁backend
+    └── 📁env
+        ├── .env.development
+        ├── .env.production
+    └── 📁src
+        └── 📁api
+            └── 📁v1
+                ├── auth-routes.js
+                ├── category-routes.js
+                ├── dashboard-routes.js
+                ├── financial-record-routes.js
+                ├── index.js
+                ├── user-routes.js
+            ├── index.js
+        └── 📁config
+            ├── db-config.js
+            ├── index.js
+            ├── passport-config.js
+            ├── redis-config.js
+            ├── server-config.js
+            ├── session-config.js
+        └── 📁controllers
+            ├── auth.controller.js
+            ├── category.controller.js
+            ├── dashboard.controller.js
+            ├── financial-record.controller.js
+            ├── index.js
+            ├── user.controller.js
+        └── 📁middlewares
+            ├── async-handler.middleware.js
+            ├── auth.middleware.js
+            ├── index.js
+            ├── role.middleware.js
+        └── 📁migrations
+            ├── 20260403082311-create-role.js
+            ├── 20260403082659-create-user.js
+            ├── 20260403082824-create-category.js
+            ├── 20260403083212-create-financial-record.js
+        └── 📁models
+            ├── category.js
+            ├── financialrecord.js
+            ├── index.js
+            ├── role.js
+            ├── user.js
+        └── 📁queries
+            ├── dashboard.query.js
+            ├── financial-record.query.js
+            ├── index.js
+        └── 📁repository
+            ├── auth.repository.js
+            ├── category.repository.js
+            ├── crud.repository.js
+            ├── dashboard.repository.js
+            ├── financial-record.repository.js
+            ├── index.js
+            ├── user.repository.js
+        └── 📁seeders
+            ├── 20260404090000-seed-roles.js
+            ├── 20260404090100-seed-users.js
+            ├── 20260404090200-seed-categories.js
+            ├── 20260404090300-seed-financial-records.js
+        └── 📁services
+            ├── auth.service.js
+            ├── category.service.js
+            ├── dashboard.service.js
+            ├── financial-record.service.js
+            ├── index.js
+            ├── user.service.js
+        └── 📁utils
+            ├── index.js
+            ├── sendError.js
+            ├── sendResponse.js
+            ├── userToPublic.js
+        └── 📁validators
+            ├── auth.validator.js
+            ├── category.validator.js
+            ├── financial-record.validator.js
+            ├── index.js
+            ├── user.validator.js
+        ├── server.js
+    ├── .gitignore
+    ├── .sequelizerc
+    ├── package-lock.json
+    └── package.json
+```
+
 ## Objective
 
 This project implements a backend for a finance dashboard system and is structured to demonstrate:
